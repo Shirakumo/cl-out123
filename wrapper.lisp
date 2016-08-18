@@ -60,13 +60,13 @@
 
 (defmethod print-object ((output output) stream)
   (print-unreadable-object (output stream :type T)
-    (format stream "~s~:[~; :CONNECTED~]~:[~; :PLAYING~]"
-            (name output) (connected output) (playing output))))
+    (format stream "~s~:[~*~*~; ~a/~a~]~:[~; :PLAYING~]"
+            (name output) (connected output) (driver output) (device output) (playing output))))
 
 (defmethod shared-initialize :after ((output output) slots &key output-to preload gain device-buffer name)
   (let ((handle (cl-out123-cffi:new)))
     (when (or (not handle) (null-pointer-p handle))
-      (error "Failed to create output handle."))
+      (error 'creation-failure :output output))
     (tg:finalize output (lambda () (dispose-handle handle)))
     (setf (slot-value output 'handle) handle)
     (when output-to
@@ -96,8 +96,8 @@
 (defun drivers (output)
   (with-foreign-objects ((drivers :pointer) (descriptions :pointer))
     (let ((driverc (cl-out123-cffi:drivers (handle output) drivers descriptions)))
-      ;; FIXME
-      (when (<= driverc 0) (error "Failed to retrieve driver listing."))
+      (when (<= driverc 0)
+        (error 'failed-driver-listing :output output))
       (let ((drivers (mem-ref drivers :pointer))
             (descriptions (mem-ref descriptions :pointer)))
         (unwind-protect
@@ -111,11 +111,12 @@
 
 (defun driver-info (output)
   (with-foreign-values ((driver :string) (device :string))
-    (with-generic-error (cl-out123-cffi:driver-info (handle output) driver device))))
+    (with-error (err 'failed-driver-info :output output :error err)
+      (cl-out123-cffi:driver-info (handle output) driver device))))
 
 (defun check-connected (output)
-  ;; FIXME
-  (unless (connected output) (error "~a has not yet been connected!" output)))
+  (unless (connected output)
+    (error 'not-conntected :output output)))
 
 (defun decode-encodings (encs)
   (loop for enc in '(:signed-32 :signed-24 :signed-16 :signed-8
@@ -133,13 +134,15 @@
 
 (defun formats (output rates min-channels max-channels)
   (check-connected output)
+  (assert (<= 0 min-channels max-channels) ())
   (set-playing NIL output)
   (with-foreign-objects ((frates :long (length rates)) (formats :pointer))
     (loop for i from 0 for rate in rates
           do (setf (mem-aref frates :long) rate))
     (let* ((formatc (cl-out123-cffi:formats (handle output) frates (length rates) min-channels max-channels formats))
            (formats (mem-ref formats :pointer)))
-      (when (= -1 formatc) (error "Failed to retrieve format listing."))
+      (when (= -1 formatc)
+        (error 'failed-format-listing :output output))
       (unwind-protect
            (loop for i from 0 below formatc
                  for fmt = (mem-aptr formats :pointer i)
@@ -151,27 +154,36 @@
 
 (defun playback-format (output)
   (with-foreign-values ((rate :long) (channels :int) (encoding 'cl-out123-cffi:enc) (framesize :int))
-    (with-generic-error (cl-out123-cffi:getformat (handle output) rate channels encoding framesize))))
+    (with-error (err 'failed-playback-format :output output :error err)
+      (cl-out123-cffi:getformat (handle output) rate channels encoding framesize))))
 
 (defun connect (output &key (driver (driver output))
                             (device (device output)))
-  (with-generic-error (cl-out123-cffi:open (handle output)
-                                           (or driver (null-pointer))
-                                           (or device (null-pointer))))
+  (when (connected output)
+    (error 'already-connected :output output))
+  (with-error (err 'connection-failed :output output :error err :driver driver :device device)
+    (cl-out123-cffi:open (handle output)
+                         (or driver (null-pointer))
+                         (or device (null-pointer))))
   (set-connected T output)
+  (multiple-value-bind (driver device) (driver-info output)
+    (setf (slot-value output 'driver) driver)
+    (setf (slot-value output 'device) device))
   output)
 
 (defun disconnect (output)
-  (cl-out123-cffi:close (handle output))
-  (set-connected NIL output)
-  (set-playing NIL output)
+  (when (connected output) 
+    (cl-out123-cffi:close (handle output))
+    (set-connected NIL output)
+    (set-playing NIL output))
   output)
 
 (defun start (output &key (rate (rate output))
                           (channels (channels output))
                           (encoding (encoding output)))
   (check-connected output)
-  (with-generic-error (cl-out123-cffi:start (handle output) rate channels encoding))
+  (with-error (err 'start-failed :output output :error err :rate rate :channels channels :encoding encoding)
+    (cl-out123-cffi:start (handle output) rate channels encoding))
   (set-playing T output)
   (multiple-value-bind (rate channels encoding framesize) (playback-format output)
     (setf (slot-value output 'rate) rate)
@@ -203,7 +215,8 @@
   (prog1
       (with-foreign-array (arr bytes :char)
         (play-directly output arr bytes))
-    (with-generic-error (cl-out123-cffi:errcode (handle output)))))
+    (with-error (err 'playback-failed :output output :error err :bytes bytes)
+      (cl-out123-cffi:errcode (handle output)))))
 
 (defun drop (output)
   (cl-out123-cffi:drop (handle output))
@@ -226,4 +239,5 @@
   (cl-out123-cffi:buffered (handle output)))
 
 (defun (setf buffered) (bytes output)
-  (with-generic-error (cl-out123-cffi:set-buffer (handle output) bytes)))
+  (with-error (err 'buffer-set-failed :output output :error err :bytes bytes)
+    (cl-out123-cffi:set-buffer (handle output) bytes)))
