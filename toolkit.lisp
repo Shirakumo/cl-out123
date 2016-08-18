@@ -23,5 +23,5 @@
     `(with-error (,err "~s failed: ~a" ',form ,err)
        ,form)))
 
-(defun device-default-name ()
-  (format NIL "~a (cl-out123)" (lisp-implementation-type)))
+(defun device-default-name (&optional (ident (package-name *package*)))
+  (format NIL "~a ~a" (lisp-implementation-type) ident))
