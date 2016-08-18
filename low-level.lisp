@@ -195,9 +195,9 @@
 (defcfun (encsize "out123_encsize") :int
   (encoding enc))
 
-(defcfun (formats "out123_formats") error
+(defcfun (formats "out123_formats") :int
   (handle :pointer)
-  (rates :long)
+  (rates (:pointer :long))
   (ratecount :int)
   (minchannels :int)
   (maxchannels :int)
