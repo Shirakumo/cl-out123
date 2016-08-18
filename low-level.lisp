@@ -169,7 +169,7 @@
   (handle :pointer)
   (handle-from :pointer))
 
-(defcfun (drivers "out123_drivers") error
+(defcfun (drivers "out123_drivers") :int
   (handle :pointer)
   (names (:pointer :string))
   (descr (:pointer :string)))
@@ -187,7 +187,7 @@
 (defcfun (close "out123_close") :void
   (handle :pointer))
 
-(defcfun (encodings "out123_encodings") error
+(defcfun (encodings "out123_encodings") :int
   (handle :pointer)
   (rate :long)
   (channels :int))
