@@ -72,8 +72,6 @@
 ;;; out123.h
 (defctype size_t :unsigned-int)
 
-(defcstruct (handle :class handle))
-
 (defcenum parms
   (:flags 1)
   :preload
@@ -111,6 +109,8 @@
   :set-no-param
   :bad-handle
   :errcount)
+
+(defcstruct (handle :class handle))
 
 (defcfun (new "out123_new") :pointer)
 
