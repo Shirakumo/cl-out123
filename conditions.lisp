@@ -21,7 +21,7 @@
   ()
   (:report (lambda (c s) (format s "Failed to list available drivers for ~a." (output c)))))
 
-(define-condition failed-fromat-listing (output-error)
+(define-condition failed-format-listing (output-error)
   ()
   (:report (lambda (c s) (format s "Failed to list available fromats for ~a." (output c)))))
 
