@@ -154,13 +154,16 @@
 
 (defun connect (output &key (driver (driver output))
                             (device (device output)))
-  (with-generic-error (cl-out123-cffi:open (handle output) driver device))
+  (with-generic-error (cl-out123-cffi:open (handle output)
+                                           (or driver (null-pointer))
+                                           (or device (null-pointer))))
   (set-connected T output)
   output)
 
 (defun disconnect (output)
   (cl-out123-cffi:close (handle output))
   (set-connected NIL output)
+  (set-playing NIL output)
   output)
 
 (defun start (output &key (rate (rate output))
