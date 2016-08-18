@@ -125,7 +125,7 @@
   (handle :pointer))
 
 (defcfun (plain-strerror "out123_plain_strerror") :string
-  (errcode :int))
+  (errcode error))
 
 (defcfun (set-buffer "out123_set_buffer") error
   (handle :pointer)

@@ -19,6 +19,7 @@
    #:fmt-rate
    #:fmt-channels
    #:fmt-encoding
+   #:size_t
    #:handle
    #:parms
    #:flags
@@ -49,6 +50,7 @@
    #:formats
    #:enc-list
    #:enc-byname
+   #:enc-name
    #:enc-longname
    #:start
    #:pause
