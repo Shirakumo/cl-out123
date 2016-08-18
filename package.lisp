@@ -35,6 +35,11 @@
    #:param-float
    #:param-string
    #:param-from
+   #:getparam
+   #:getparam-int
+   #:getparam-float
+   #:getparam-string
+   #:getparam-from
    #:drivers
    #:open
    #:driver-info

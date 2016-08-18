@@ -26,6 +26,7 @@
 
 ;;; fmt123.h
 (defcenum enc
+  (:error       0)
   (:8           #x000F)
   (:16          #x0040)
   (:24          #x4000)
@@ -120,17 +121,17 @@
 (defcfun (strerror "out123_strerror") :string
   (handle :pointer))
 
-(defcfun (errcode "out123_errcode") :int
+(defcfun (errcode "out123_errcode") error
   (handle :pointer))
 
 (defcfun (plain-strerror "out123_plain_strerror") :string
   (errcode :int))
 
-(defcfun (set-buffer "out123_set_buffer") :int
+(defcfun (set-buffer "out123_set_buffer") error
   (handle :pointer)
   (buffer-bytes size_t))
 
-(defcfun (param "out123_param") :int
+(defcfun (param "out123_param") error
   (handle :pointer)
   (code parms)
   (value :long)
@@ -147,21 +148,38 @@
 (defun param-string (handle code value)
   (param handle code 0 0.0d0 value))
 
-(defcfun (param-from "out123_param_from") :int
+(defcfun (getparam "out123_getparam") error
+  (handle :pointer)
+  (code parms)
+  (ret-value (:pointer :long))
+  (ret-fvalue (:pointer :double))
+  (ret-svalue (:pointer :string)))
+
+(declaim (inline getparam-int getparam-float getparam-string))
+(defun getparam-int (handle code value)
+  (getparam handle code value 0.0d0 (null-pointer)))
+
+(defun getparam-float (handle code value)
+  (getparam handle code 0 value (null-pointer)))
+
+(defun getparam-string (handle code value)
+  (getparam handle code 0 0.0d0 value))
+
+(defcfun (param-from "out123_param_from") error
   (handle :pointer)
   (handle-from :pointer))
 
-(defcfun (drivers "out123_drivers") :int
+(defcfun (drivers "out123_drivers") error
   (handle :pointer)
   (names (:pointer :string))
   (descr (:pointer :string)))
 
-(defcfun (open "out123_open") :int
+(defcfun (open "out123_open") error
   (handle :pointer)
   (driver :string)
   (device :string))
 
-(defcfun (driver-info "out123_driver_info") :int
+(defcfun (driver-info "out123_driver_info") error
   (handle :pointer)
   (driver (:pointer :string))
   (device (:pointer :string)))
@@ -169,7 +187,7 @@
 (defcfun (close "out123_close") :void
   (handle :pointer))
 
-(defcfun (encodings "out123_encodings") :int
+(defcfun (encodings "out123_encodings") error
   (handle :pointer)
   (rate :long)
   (channels :int))
@@ -177,7 +195,7 @@
 (defcfun (encsize "out123_encsize") :int
   (encoding :int))
 
-(defcfun (formats "out123_formats") :int
+(defcfun (formats "out123_formats") error
   (handle :pointer)
   (rates :long)
   (ratecount :int)
@@ -188,7 +206,7 @@
 (defcfun (enc-list "out123_enc_list") :int
   (enclist (:pointer (:pointer :int))))
 
-(defcfun (enc-byname "out123_enc_byname") :int
+(defcfun (enc-byname "out123_enc_byname") enc
   (name :string))
 
 (defcfun (enc-name "out123_enc_name") :string
@@ -197,7 +215,7 @@
 (defcfun (enc-longname "out123_enc_longname") :string
   (encoding :int))
 
-(defcfun (start "out123_start") :int
+(defcfun (start "out123_start") error
   (handle :pointer)
   (rate :long)
   (channels :int)
@@ -230,7 +248,7 @@
 (defcfun (buffered "out123_buffered") size_t
   (handle :pointer))
 
-(defcfun (getformat "out123_getformat") :int
+(defcfun (getformat "out123_getformat") error
   (handle :pointer)
   (rate (:pointer :long))
   (channels (:pointer :int))
