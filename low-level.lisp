@@ -227,7 +227,7 @@
 (defcfun (continue "out123_continue") :void
   (handle :pointer))
 
-(defcfun (stop "oiut123_stop") :void
+(defcfun (stop "out123_stop") :void
   (handle :pointer))
 
 (defcfun (play "out123_play") size_t
