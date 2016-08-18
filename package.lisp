@@ -16,6 +16,9 @@
    #:enc
    #:smaplesize
    #:fmt
+   #:fmt-rate
+   #:fmt-channels
+   #:fmt-encoding
    #:handle
    #:parms
    #:flags
