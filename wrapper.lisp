@@ -58,6 +58,11 @@
    :device-buffer T
    :name (device-default-name)))
 
+(defmethod print-object ((output output) stream)
+  (print-unreadable-object (output stream :type T)
+    (format stream "~s~:[~; :CONNECTED~]~:[~; :PLAYING~]"
+            (name output) (connected output) (playing output))))
+
 (defmethod shared-initialize :after ((output output) slots &key output-to preload gain device-buffer name)
   (let ((handle (cl-out123-cffi:new)))
     (when (or (not handle) (null-pointer-p handle))
