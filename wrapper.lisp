@@ -92,15 +92,15 @@
   (with-foreign-objects ((drivers :pointer) (descriptions :pointer))
     (let ((driverc (cl-out123-cffi:drivers (handle output) drivers descriptions)))
       ;; FIXME
-      (when (= 0 driverc) (error "Failed to retrieve driver listing."))
+      (when (<= driverc 0) (error "Failed to retrieve driver listing."))
       (let ((drivers (mem-ref drivers :pointer))
-            (descriptions (mem-ref drivers :pointer)))
+            (descriptions (mem-ref descriptions :pointer)))
         (unwind-protect
              (loop for i from 0 below driverc
                    collect (list (mem-aref drivers :string i)
                                  (mem-aref descriptions :string i))
-                   do (foreign-free (mem-aptr drivers :string i))
-                      (foreign-free (mem-aptr descriptions :string i)))
+                   do (foreign-free (mem-aref drivers :pointer i))
+                      (foreign-free (mem-aref descriptions :pointer i)))
           (foreign-free drivers)
           (foreign-free descriptions))))))
 
@@ -140,7 +140,7 @@
                  collect (list :rate (cl-out123-cffi:fmt-rate fmt)
                                :channels (cl-out123-cffi:fmt-channels fmt)
                                :encoding (decode-encodings (cl-out123-cffi:fmt-encoding fmt)))
-                 do (foreign-free (mem-aptr formats :pointer i)))
+                 do (foreign-free fmt))
         (foreign-free formats)))))
 
 (defun playback-format (output)
