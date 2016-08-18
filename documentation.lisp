@@ -8,10 +8,10 @@
 
 ;; low-level.lisp
 (docs:define-docs
-  (variable *here*
+  (variable cl-out123-cffi::*here*
     "Variable containing the path to this very file, hopefully.")
 
-  (variable *static*
+  (variable cl-out123-cffi:*static*
     "Variable containing a pathname to the static directory.")
   )
 
