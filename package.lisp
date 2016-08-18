@@ -58,7 +58,7 @@
 
 (defpackage #:cl-out123
   (:nicknames #:org.shirakumo.fraf.out123)
-  (:use #:cl #:org.shirakumo.fraf.out123.cffi)
+  (:use #:cl)
   ;; wrapper.lisp
   (:export
    ))
