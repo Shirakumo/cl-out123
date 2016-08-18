@@ -62,7 +62,8 @@
     (when gain (cl-out123-cffi:param-int handle :gain gain))
     (etypecase device-buffer
       (real (cl-out123-cffi:param-float handle :devicebuffer (float device-buffer 0.0d0)))
-      ((eql T) (cl-out123-cffi:param-float handle :devicebuffer 0.0d0)))
+      ((eql T) (cl-out123-cffi:param-float handle :devicebuffer 0.0d0))
+      ((eql NIL)))
     (when name
       (cl-out123-cffi:param-string handle :name name))))
 
