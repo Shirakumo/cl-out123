@@ -142,12 +142,11 @@
       (when (= -1 formatc) (error "Failed to retrieve format listing."))
       (unwind-protect
            (loop for i from 0 below formatc
-                 for fmt = (mem-aref formats :pointer i)
+                 for fmt = (mem-aptr formats :pointer i)
                  when (< 0 (cl-out123-cffi:fmt-encoding fmt))
                  collect (list :rate (cl-out123-cffi:fmt-rate fmt)
                                :channels (cl-out123-cffi:fmt-channels fmt)
-                               :encoding (decode-encodings (cl-out123-cffi:fmt-encoding fmt)))
-                 do (foreign-free fmt))
+                               :encoding (decode-encodings (cl-out123-cffi:fmt-encoding fmt))))
         (foreign-free formats)))))
 
 (defun playback-format (output)
