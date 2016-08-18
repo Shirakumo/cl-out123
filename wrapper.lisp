@@ -71,9 +71,11 @@
   (dispose-handle (handle output))
   (call-next-method)
   (when (connected output)
+    (set-connected NIL output)
     (connect output))
   (when (playing output)
-    (start output)))
+    (start output))
+  output)
 
 (defun drivers (output)
   (with-foreign-objects ((drivers :pointer) (descriptions :pointer))
