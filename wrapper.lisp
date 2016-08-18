@@ -6,26 +6,6 @@
 
 (in-package #:org.shirakumo.fraf.out123)
 
-(defmacro with-foreign-values (bindings &body body)
-  `(with-foreign-objects ,bindings
-     ,@body
-     (values ,@(loop for (name type) in bindings
-                     collect `(mem-ref ,name ,type)))))
-
-(defmacro with-error ((err datum &rest datum-args) &body form)
-  `(let ((,err (progn ,@form)))
-     (unless (eql ,err :ok)
-       (let ((,err (cl-out123-cffi:plain-strerror ,err)))
-         (error ,datum ,@datum-args)))))
-
-(defmacro with-generic-error (form)
-  (let ((err (gensym "ERR")))
-    `(with-error (,err "~s failed: ~a" ',form ,err)
-       ,form)))
-
-(defun device-default-name ()
-  (format NIL "~a (cl-out123)" (lisp-implementation-type)))
-
 (defun dispose-handle (handle)
   (unless (null-pointer-p handle)
     (cl-out123-cffi:drain handle)
