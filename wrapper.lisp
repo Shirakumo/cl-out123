@@ -8,7 +8,7 @@
 
 (defun dispose-handle (handle)
   (unless (null-pointer-p handle)
-    (cl-out123-cffi:drain handle)
+    (cl-out123-cffi:drop handle)
     (cl-out123-cffi:close handle)
     (cl-out123-cffi:del handle)))
 
@@ -21,6 +21,7 @@
    (rate :initarg :rate :reader rate)
    (channels :initarg :channels :reader channels)
    (encoding :initarg :encoding :reader encoding)
+   (framesize :initform NIL :reader framesize)
    (output-to :initarg :output-to :reader output-to)
    (preload :initarg :preload :reader preload)
    (gain :initarg :gain :reader gain)
@@ -96,7 +97,7 @@
 
 (defun check-connected (output)
   (unless (connected output)
-    (error 'not-conntected :output output)))
+    (error 'not-connected :output output)))
 
 (defun decode-encodings (encs)
   (loop for enc in '(:signed-32 :signed-24 :signed-16 :signed-8
@@ -129,7 +130,7 @@
                  when (< 0 (cl-out123-cffi:fmt-encoding fmt))
                  collect (list :rate (cl-out123-cffi:fmt-rate fmt)
                                :channels (cl-out123-cffi:fmt-channels fmt)
-                               :encoding (decode-encodings (cl-out123-cffi:fmt-encoding fmt))))
+                               :encodings (decode-encodings (cl-out123-cffi:fmt-encoding fmt))))
         (foreign-free formats)))))
 
 (defun playback-format (output)
