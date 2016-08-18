@@ -32,7 +32,7 @@
    :device NIL
    :rate 44100
    :channels 2
-   :encoding :unsigned-16
+   :encoding :signed-16
    :output-to ()
    :preload T
    :gain NIL
