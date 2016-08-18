@@ -193,7 +193,7 @@
   (channels :int))
 
 (defcfun (encsize "out123_encsize") :int
-  (encoding :int))
+  (encoding enc))
 
 (defcfun (formats "out123_formats") error
   (handle :pointer)
@@ -204,22 +204,22 @@
   (fmtlist :pointer))
 
 (defcfun (enc-list "out123_enc_list") :int
-  (enclist (:pointer (:pointer :int))))
+  (enclist (:pointer (:pointer enc))))
 
 (defcfun (enc-byname "out123_enc_byname") enc
   (name :string))
 
 (defcfun (enc-name "out123_enc_name") :string
-  (encoding :int))
+  (encoding enc))
 
 (defcfun (enc-longname "out123_enc_longname") :string
-  (encoding :int))
+  (encoding enc))
 
 (defcfun (start "out123_start") error
   (handle :pointer)
   (rate :long)
   (channels :int)
-  (encoding :int))
+  (encoding enc))
 
 (defcfun (pause "out123_pause") :void
   (handle :pointer))
@@ -252,5 +252,5 @@
   (handle :pointer)
   (rate (:pointer :long))
   (channels (:pointer :int))
-  (encoding (:pointer :int))
+  (encoding (:pointer enc))
   (framesize (:pointer :int)))
