@@ -118,7 +118,9 @@
   (unless (connected output) (error "~a has not yet been connected!" output)))
 
 (defun decode-encodings (encs)
-  (loop for enc in (foreign-enum-keyword-list 'cl-out123-cffi:enc)
+  (loop for enc in '(:signed-32 :signed-24 :signed-16 :signed-8
+                     :unsigned-32 :unsigned-24 :unsigned-16 :unsigned-8
+                     :ulaw-8 :alaw-8 :float-32 :float-64)
         when (/= 0 (logand (foreign-enum-value 'cl-out123-cffi:enc enc) encs))
         collect (list enc (cl-out123-cffi:encsize enc))))
 
