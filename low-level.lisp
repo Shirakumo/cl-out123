@@ -71,7 +71,8 @@
   (encoding :int))
 
 ;;; out123.h
-(defctype size_t :unsigned-int)
+(defctype size_t #+x86-64 :unsigned-long
+                 #-x86-64 :unsigned-int)
 
 (defcenum parms
   (:flags 1)
