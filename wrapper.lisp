@@ -44,28 +44,29 @@
     (format stream "~s~:[~*~*~; ~a/~a~]~:[~; :PLAYING~]"
             (name output) (connected output) (driver output) (device output) (playing output))))
 
-(defmethod shared-initialize :after ((output output) slots &key output-to preload gain device-buffer name)
-  (let ((handle (cl-out123-cffi:new)))
-    (when (or (not handle) (null-pointer-p handle))
-      (error 'creation-failure :output output))
-    (tg:finalize output (lambda () (dispose-handle handle)))
-    (setf (slot-value output 'handle) handle)
-    (when output-to
-      (let ((code 0))
-        (dolist (flag output-to)
-          (setf code (logior code (foreign-enum-value 'cl-out123-cffi:flags flag))))
-        (cl-out123-cffi:param-int handle :flags code)))
-    (etypecase preload
-      (real (cl-out123-cffi:param-float handle :preload (float preload 0.0d0)))
-      ((eql T))
-      ((eql NIL) (cl-out123-cffi:param-float handle :preload 0.0d0)))
-    (when gain (cl-out123-cffi:param-int handle :gain gain))
-    (etypecase device-buffer
-      (real (cl-out123-cffi:param-float handle :devicebuffer (float device-buffer 0.0d0)))
-      ((eql T) (cl-out123-cffi:param-float handle :devicebuffer 0.0d0))
-      ((eql NIL)))
-    (when name
-      (cl-out123-cffi:param-string handle :name name))))
+(defmethod shared-initialize :after ((output output) slots &key)
+  (with-slots (output-to preload gain device-buffer name) output
+    (let ((handle (cl-out123-cffi:new)))
+      (when (or (not handle) (null-pointer-p handle))
+        (error 'creation-failure :output output))
+      (tg:finalize output (lambda () (dispose-handle handle)))
+      (setf (slot-value output 'handle) handle)
+      (when output-to
+        (let ((code 0))
+          (dolist (flag output-to)
+            (setf code (logior code (foreign-enum-value 'cl-out123-cffi:flags flag))))
+          (cl-out123-cffi:param-int handle :flags code)))
+      (etypecase preload
+        (real (cl-out123-cffi:param-float handle :preload (float preload 0.0d0)))
+        ((eql T))
+        ((eql NIL) (cl-out123-cffi:param-float handle :preload 0.0d0)))
+      (when gain (cl-out123-cffi:param-int handle :gain gain))
+      (etypecase device-buffer
+        (real (cl-out123-cffi:param-float handle :devicebuffer (float device-buffer 0.0d0)))
+        ((eql T) (cl-out123-cffi:param-float handle :devicebuffer 0.0d0))
+        ((eql NIL)))
+      (when name
+        (cl-out123-cffi:param-string handle :name name)))))
 
 (defmethod reinitialize-instance :around ((output output) &key)
   (dispose-handle (handle output))
