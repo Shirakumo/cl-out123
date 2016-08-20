@@ -195,10 +195,14 @@
 (defun play-directly (output buffer bytes)
   (cl-out123-cffi:play (handle output) buffer bytes))
 
-(defun play (output bytes)
+(defun play (output bytes &optional (count (length bytes)))
   (prog1
-      (with-foreign-array (arr bytes :char)
-        (play-directly output arr bytes))
+      (etypecase bytes
+        (foreign-pointer
+         (play-directly output bytes count))
+        ((vector (unsigned-byte 8))
+         (with-foreign-array (arr bytes :char)
+           (play-directly output arr count))))
     (with-error (err 'playback-failed :output output :error err :bytes bytes)
       (cl-out123-cffi:errcode (handle output)))))
 

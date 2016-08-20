@@ -394,7 +394,7 @@ See HANDLE
 See OUTPUT")
 
   (function play
-    "Send the octet-vector to out123 to be played back on the output.
+    "Send the octet-vector or array-pointer to out123 to be played back on the output.
 
 If you need low latency, then this is definitely not the
 function for you. The buffer is converted into a foreign
