@@ -12,6 +12,9 @@
     (cl-out123-cffi:close handle)
     (cl-out123-cffi:del handle)))
 
+(defun make-output (driver &rest args &key &allow-other-keys)
+  (apply #'make-instance 'output :driver driver args))
+
 (defclass output ()
   ((handle :initform NIL :reader handle)
    (playing :initform NIL :reader playing :writer set-playing)

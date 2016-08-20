@@ -93,6 +93,7 @@
    #:device-default-name)
   ;; wrapper.lisp
   (:export
+   #:make-output
    #:output
    #:handle
    #:playing
