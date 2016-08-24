@@ -72,6 +72,9 @@
         (cl-out123-cffi:param-string handle :name name)))))
 
 (defmethod reinitialize-instance :around ((output output) &key)
+  ;; Make sure that our finalizer cannot accidentally try to
+  ;; dispose of an already disposed handle later...
+  (tg:cancel-finalization output)
   (dispose-handle (handle output))
   (call-next-method)
   (when (connected output)
