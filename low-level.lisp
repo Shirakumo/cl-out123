@@ -26,28 +26,27 @@
 
 ;;; fmt123.h
 (defcenum enc
-  (:error       0)
   (:8           #x000F)
   (:16          #x0040)
   (:24          #x4000)
   (:32          #x0100)
   (:signed      #x0080)
-  (:float       #x0E00)
-  (:signed-16   #x00D0)                 ; 16 | signed | 0x10
-  (:unsigned-16 #x0060)                 ; 16 | 0x20
-  (:unsigned-8  #x0001)
-  (:signed-8    #x0082)                 ; signed | 0x02
-  (:ulaw-8      #x0004)
-  (:alaw-8      #x0008)
-  (:signed-32   #x1180)                 ; 32 | signed | 0x1000
-  (:unsigned-32 #x2100)                 ; 32 | 0x2000
-  (:signed-24   #x5080)                 ; 24 | signed | 0x1000
-  (:unsigned-24 #x6000)                 ; 24 | 0x2000
-  (:float-32    #x0200)
-  (:float-64    #x0400)
-  (:any         #x77FF))                ;  signed-16 | unsigned-16 | unsigned-8 | signed-8
-                                        ;| ulaw-8    | alaw-8      | signed-32  | unsigned-32
-                                        ;| signed-24 | unsigned-24 | float-32   | float-64
+  (:float-type  #x0E00)
+  (:int16       #x00D0)                 ; 16 | signed | 0x10
+  (:uint16      #x0060)                 ; 16 | 0x20
+  (:uint8       #x0001)
+  (:int8        #x0082)                 ; signed | 0x02
+  (:ulaw8       #x0004)
+  (:alaw8       #x0008)
+  (:int32       #x1180)                 ; 32 | signed | 0x1000
+  (:uint32      #x2100)                 ; 32 | 0x2000
+  (:int24       #x5080)                 ; 24 | signed | 0x1000
+  (:uint24      #x6000)                 ; 24 | 0x2000
+  (:float       #x0200)
+  (:double      #x0400)
+  (:any         #x77FF))                ;  int16  | uint16 | uint8 | int8
+                                        ;| ulaw-8 | alaw-8 | int32 | uint32
+                                        ;| int24  | uint24 | float | double
 
 (declaim (inline samplesize))
 (defun samplesize (enc)
@@ -58,9 +57,9 @@
         ((/= 0 (logand enc (foreign-enum-value 'enc :24)))
          3)
         ((or (/= 0 (logand enc (foreign-enum-value 'enc :32)))
-             (= enc (foreign-enum-value 'enc :float-32)))
+             (= enc (foreign-enum-value 'enc :float)))
          4)
-        ((= enc (foreign-enum-value 'enc :float-64))
+        ((= enc (foreign-enum-value 'enc :double))
          8)
         (T
          0)))

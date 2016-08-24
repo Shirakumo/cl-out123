@@ -35,7 +35,7 @@
    :device NIL
    :rate 44100
    :channels 2
-   :encoding :signed-16
+   :encoding :int16
    :output-to ()
    :preload T
    :gain NIL
@@ -107,9 +107,7 @@
     (error 'not-connected :output output)))
 
 (defun decode-encodings (encs)
-  (loop for enc in '(:signed-32 :signed-24 :signed-16 :signed-8
-                     :unsigned-32 :unsigned-24 :unsigned-16 :unsigned-8
-                     :ulaw-8 :alaw-8 :float-32 :float-64)
+  (loop for enc in '(:int32 :int24 :int16 :int8 :uint32 :uint24 :uint16 :uint8 :ulaw8 :alaw8 :float :double)
         when (/= 0 (logand (foreign-enum-value 'cl-out123-cffi:enc enc) encs))
         collect (list enc (cl-out123-cffi:encsize enc))))
 

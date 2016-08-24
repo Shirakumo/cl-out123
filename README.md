@@ -26,7 +26,7 @@ Now that we have a stable connection to the sound system, we can query it for po
 
 Finally once we have figured out a proper format to use, or again are fine with the default, we can start playback to the device:
 
-    (cl-out123:start *out* :rate 44100 :channels 2 :encoding :signed-16)
+    (cl-out123:start *out* :rate 44100 :channels 2 :encoding :int16)
 
 Now buffered audio data that conforms to the format we picked can be sent to be played back using `play` or `play-directly`:
 
