@@ -1,126 +1,86 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta charset="utf-8"/>
-    <title>CL-OUT123</title>
-    <style type="text/css">
-      html{font-family: serif;}
-      code a{text-decoration: none;}
-      h1{display: inline-block; margin-bottom: 0;}
-      code{font-family: monospace;}
-      h4{display: inline-block; margin: 0; padding: 0;}
-      #symbol-index ul{list-style: none;}
-      .package li{margin-bottom: 20px;}
-      .package pre{margin: 0 0 0 10px; white-space: pre-wrap;}
-      .package .nicknames{font-weight: normal;}
-      table{margin: 20px;}
-      td{padding-bottom: 10px;}
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>cl-out123</h1>
-      <span class="version">1.0.0</span>
-      <p class="description">Bindings to libout123, providing cross-platform audio output.</p>
-    </header>
-    <div id="content">
-      <article>
-        
-          <span><h2>About cl-out123</h2>
+<!DOCTYPE html> <html xmlns="http://www.w3.org/1999/xhtml"> <head> <meta charset="utf-8"/> <title>Cl-Out123</title> <meta name="viewport" content="width=device-width"/> <meta name="description" content="Bindings to libout123, providing cross-platform audio output."/> <meta name="author" content="Nicolas Hafner &lt;shinmera@tymoon.eu&gt;"/> <style type="text/css"> body{
+          max-width: 1024px;
+          margin: 0 auto 0 auto;
+          font-family: sans-serif;
+          color: #333333;
+          font-size: 14pt;
+          padding: 5px;
+      }
 
-<p>This is a bindings library to <a href="https://www.mpg123.de/api/">libout123</a> which allows easy cross-platform audio playback.</p>
+      body>header{
+          display:flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 100%;
+      }
 
-<h2>How To</h2>
+      img{
+          max-width: 100%;
+          max-height: 100%;
+      }
 
-<p>Precompiled versions of the underlying library are included in this. If you want to build it manually however, refer to the <a href="https://www.mpg123.de/">mpg123</a> page.</p>
+      code{
+          font-family: Consolas, Inconsolata, monospace;
+      }
 
-<p>Load the system through ASDF or Quicklisp:</p>
+      a{
+          text-decoration: none;
+          color: #0055AA;
+      }
 
-<pre><code>(ql:quickload :cl-out123)
-</code></pre>
+      #documentation{
+          text-align: justify;
+      }
 
-<p>Create a new output object:</p>
+      #documentation pre{
+          margin-left: 20px;
+      }
 
-<pre><code>(<a href="http://l1sp.org/cl/defvar">defvar</a> *out* (<a href="http://l1sp.org/cl/make-instance">make-instance</a> 'cl-out123:output))
-</code></pre>
+      #symbol-index>ul{
+          list-style: none;
+          padding: 0;
+      }
+      #symbol-index .package>ul{
+          list-style: none;
+          padding: 0 0 0 10px;
+      }
+      #symbol-index .package .nicknames{
+          font-weight: normal;
+      }
+      #symbol-index .package h4{
+          display: inline-block;
+          margin: 0;
+      }
+      #symbol-index .package article{
+          margin: 0 0 15px 0;
+      }
+      #symbol-index .package article header{
+          font-size: 1.2em;
+          font-weight: normal;
+      }
+      #symbol-index .package .name{
+          margin-right: 5px;
+      }
+      #symbol-index .package .docstring{
+          margin: 0 0 0 15px;
+          white-space: pre-wrap;
+          font-size: 12pt;
+      }
 
-<p>This will initialise a standard output handler object for you, based on some hopefully sane defaults. We can now look at a list of possible drivers:</p>
-
-<pre><code>(<a href="#CL-OUT123:DRIVERS">cl-out123:drivers</a> *out*)
-</code></pre>
-
-<p>If we're fine with the automatic default or now have a backend we know we want to use, we can connect to it:</p>
-
-<pre><code>(<a href="#CL-OUT123:CONNECT">cl-out123:connect</a> *out* :driver &quot;pulse&quot;)
-</code></pre>
-
-<p>Now that we have a stable connection to the sound system, we can query it for possible output formats:</p>
-
-<pre><code>(<a href="#CL-OUT123:FORMATS">cl-out123:formats</a> *out* '(44100) 1 2)
-</code></pre>
-
-<p>Finally once we have figured out a proper format to use, or again are fine with the default, we can start playback to the device:</p>
-
-<pre><code>(<a href="#CL-OUT123:START">cl-out123:start</a> *out* :rate 44100 :channels 2 :encoding :signed-16)
-</code></pre>
-
-<p>Now buffered audio data that conforms to the format we picked can be sent to be played back using <code><a href="#CL-OUT123:PLAY">play</a></code> or <code><a href="#CL-OUT123:PLAY-DIRECTLY">play-directly</a></code>:</p>
-
-<pre><code>(<a href="#CL-OUT123:PLAY">cl-out123:play</a> *out* #(...))
-</code></pre>
-
-<p>It will return you the amount of bytes it actually managed to play back. If need be, playback can also be <code><a href="#CL-OUT123:PAUSE">pause</a></code>d, <code><a href="#CL-OUT123:RESUME">resume</a></code>d, and <code><a href="#CL-OUT123:STOP">stop</a></code>ped. Currently buffered data can be <code><a href="#CL-OUT123:DROP">drop</a></code>ped, or <code><a href="#CL-OUT123:DRAIN">drain</a></code>ed too to allow you to synchronise things.</p>
-
-<p>Once we're done, simply <code><a href="#CL-OUT123:STOP">stop</a></code> the output object:</p>
-
-<pre><code>(<a href="#CL-OUT123:STOP">cl-out123:stop</a> *out*)
-</code></pre>
-
-<p>If for some reason you find yourself needing to change output format or device after having initialised your output already, you can reconfigure it using <code><a href="http://l1sp.org/cl/reinitialize-instance">reinitialize-instance</a></code>. This will cause your current playback to end if it is currently running, but should otherwise phase over smoothly.</p>
-
-<pre><code>(<a href="http://l1sp.org/cl/reinitialize-instance">reinitialize-instance</a> *out* :driver &quot;alsa&quot;)
-</code></pre>
-
-<p>There is no need to explicitly deallocate or clean up data. As soon as the output object is garbage collected, the cleanup will be handled for you automatically. If you would like to explicitly close the connection anyway:</p>
-
-<pre><code>(<a href="#CL-OUT123:DISCONNECT">cl-out123:disconnect</a> *out*)
-</code></pre>
-
-<p>And that's pretty much all there is to it. The heavy burden falls onto you to get the audio data ready in the proper format for it to be played back. The actual transfer process to the sound system should be easy with this library.</p>
-</span>
-        
-      </article>
-      <article>
-        
-          <h2>Copyright</h2>
-          <span>cl-out123</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.
-          
-            © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span>
-            .
-          
-          This library can be obtained on <a href="https://github.com/Shirakumo/cl-out123">https://github.com/Shirakumo/cl-out123</a>.
-        
-      </article>
-      
-        <article id="symbol-index">
-          <h2>Package Index</h2>
-          <ul><li class="package">
-              <h3>
-                <a name="CL-OUT123" href="#CL-OUT123">CL-OUT123</a>
-                <span class="nicknames">(ORG.SHIRAKUMO.FRAF.OUT123)</span>
-              </h3>
-              <ul><li>
-                  <a name="CL-OUT123:OUTPUT"/>
-                  <article>
-                    <header class="class">
-                      <span class="type">class</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:OUTPUT" class="name">OUTPUT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Class representing an output to a sound playback device.
+      @media (max-width: 800px){
+          body{font-size: 12pt;}
+      } </style> </head> <body> <header> <h1>cl-out123</h1> <span class="version">1.0.0</span> <p class="description">Bindings to libout123, providing cross-platform audio output.</p> </header> <main> <article id="documentation">  <div><h2>About cl-out123</h2> <p>This is a bindings library to <a href="https://www.mpg123.de/api/">libout123</a> which allows easy cross-platform audio playback.</p> <h2>How To</h2> <p>Precompiled versions of the underlying library are included in this. If you want to build it manually however, refer to the <a href="https://www.mpg123.de/">mpg123</a> page.</p> <p>Load the system through ASDF or Quicklisp:</p> <pre><code>(ql:quickload :cl-out123)
+</code></pre> <p>Create a new output object:</p> <pre><code>(<a href="http://l1sp.org/cl/defvar">defvar</a> *out* (<a href="http://l1sp.org/cl/make-instance">make-instance</a> 'cl-out123:output))
+</code></pre> <p>This will initialise a standard output handler object for you, based on some hopefully sane defaults. We can now look at a list of possible drivers:</p> <pre><code>(<a href="#CL-OUT123:DRIVERS">cl-out123:drivers</a> *out*)
+</code></pre> <p>If we're fine with the automatic default or now have a backend we know we want to use, we can connect to it:</p> <pre><code>(<a href="#CL-OUT123:CONNECT">cl-out123:connect</a> *out* :driver &quot;pulse&quot;)
+</code></pre> <p>Now that we have a stable connection to the sound system, we can query it for possible output formats:</p> <pre><code>(<a href="#CL-OUT123:FORMATS">cl-out123:formats</a> *out* '(44100) 1 2)
+</code></pre> <p>Finally once we have figured out a proper format to use, or again are fine with the default, we can start playback to the device:</p> <pre><code>(<a href="#CL-OUT123:START">cl-out123:start</a> *out* :rate 44100 :channels 2 :encoding :int16)
+</code></pre> <p>Now buffered audio data that conforms to the format we picked can be sent to be played back using <code><a href="#CL-OUT123:PLAY">play</a></code> or <code><a href="#CL-OUT123:PLAY-DIRECTLY">play-directly</a></code>:</p> <pre><code>(<a href="#CL-OUT123:PLAY">cl-out123:play</a> *out* #(...))
+</code></pre> <p>It will return you the amount of bytes it actually managed to play back. If need be, playback can also be <code><a href="#CL-OUT123:PAUSE">pause</a></code>d, <code><a href="#CL-OUT123:RESUME">resume</a></code>d, and <code><a href="#CL-OUT123:STOP">stop</a></code>ped. Currently buffered data can be <code><a href="#CL-OUT123:DROP">drop</a></code>ped, or <code><a href="#CL-OUT123:DRAIN">drain</a></code>ed too to allow you to synchronise things.</p> <p>Once we're done, simply <code><a href="#CL-OUT123:STOP">stop</a></code> the output object:</p> <pre><code>(<a href="#CL-OUT123:STOP">cl-out123:stop</a> *out*)
+</code></pre> <p>If for some reason you find yourself needing to change output format or device after having initialised your output already, you can reconfigure it using <code><a href="http://l1sp.org/cl/reinitialize-instance">reinitialize-instance</a></code>. This will cause your current playback to end if it is currently running, but should otherwise phase over smoothly.</p> <pre><code>(<a href="http://l1sp.org/cl/reinitialize-instance">reinitialize-instance</a> *out* :driver &quot;alsa&quot;)
+</code></pre> <p>There is no need to explicitly deallocate or clean up data. As soon as the output object is garbage collected, the cleanup will be handled for you automatically. If you would like to explicitly close the connection anyway:</p> <pre><code>(<a href="#CL-OUT123:DISCONNECT">cl-out123:disconnect</a> *out*)
+</code></pre> <p>And that's pretty much all there is to it. The heavy burden falls onto you to get the audio data ready in the proper format for it to be played back. The actual transfer process to the sound system should be easy with this library.</p> </div>  </article> <article id="copyright">  <h2>Copyright</h2> <span>cl-out123</span> is licensed under the <span><a href="https://tldrlegal.com/search?q=Artistic">Artistic</a></span> license.  © <span>Nicolas Hafner &lt;shinmera@tymoon.eu&gt;</span> .  This library can be obtained on <a href="https://github.com/Shirakumo/cl-out123">https://github.com/Shirakumo/cl-out123</a>.  </article>  <article id="symbol-index"> <h2>Package Index</h2> <ul><li class="package"> <h3> <a name="CL-OUT123" href="#CL-OUT123">CL-OUT123</a> <span class="nicknames">(ORG.SHIRAKUMO.FRAF.OUT123)</span> </h3> <ul><li> <a name="CL-OUT123:OUTPUT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#CL-OUT123:OUTPUT">OUTPUT</a></code></h4>  </header> <pre class="docstring">Class representing an output to a sound playback device.
 
 This holds all the necessary state and information in order to connect and
 play back audio data to a device.
@@ -142,177 +102,34 @@ See OUTPUT-TO
 See PRELOAD
 See GAIN
 See DEVICE-BUFFER
-See NAME</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:ALREADY-CONNECTED"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:ALREADY-CONNECTED" class="name">ALREADY-CONNECTED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled if an attempt is made to connect again while the output is still connected.
+See NAME</pre> </article> </li><li> <a name="CL-OUT123:ALREADY-CONNECTED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:ALREADY-CONNECTED">ALREADY-CONNECTED</a></code></h4>  </header> <pre class="docstring">Condition signalled if an attempt is made to connect again while the output is still connected.
 
-See OUTPUT-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:BUFFER-SET-FAILED"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:BUFFER-SET-FAILED" class="name">BUFFER-SET-FAILED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled if the setting of the background buffer fails.
+See OUTPUT-ERROR</pre> </article> </li><li> <a name="CL-OUT123:BUFFER-SET-FAILED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:BUFFER-SET-FAILED">BUFFER-SET-FAILED</a></code></h4>  </header> <pre class="docstring">Condition signalled if the setting of the background buffer fails.
 
 See ERROR-STRING-ERROR
-See BYTES</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:CONNECTION-FAILED"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:CONNECTION-FAILED" class="name">CONNECTION-FAILED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled if the connection of an output to its device fails.
+See BYTES</pre> </article> </li><li> <a name="CL-OUT123:CONNECTION-FAILED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:CONNECTION-FAILED">CONNECTION-FAILED</a></code></h4>  </header> <pre class="docstring">Condition signalled if the connection of an output to its device fails.
 
 See ERROR-STRING-ERROR
 See DRIVER
-See DEVICE</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:CREATION-FAILURE"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:CREATION-FAILURE" class="name">CREATION-FAILURE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled in the case the allocation of the output handler fails.
+See DEVICE</pre> </article> </li><li> <a name="CL-OUT123:CREATION-FAILURE"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:CREATION-FAILURE">CREATION-FAILURE</a></code></h4>  </header> <pre class="docstring">Condition signalled in the case the allocation of the output handler fails.
 
-See OUTPUT-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:ERROR-STRING-ERROR"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:ERROR-STRING-ERROR" class="name">ERROR-STRING-ERROR</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Error condition superclass for errors that have an error-string from the out123 library.
+See OUTPUT-ERROR</pre> </article> </li><li> <a name="CL-OUT123:ERROR-STRING-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:ERROR-STRING-ERROR">ERROR-STRING-ERROR</a></code></h4>  </header> <pre class="docstring">Error condition superclass for errors that have an error-string from the out123 library.
 
 See ERROR-STRING
-See OUTPUT-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:FAILED-DRIVER-LISTING"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:FAILED-DRIVER-LISTING" class="name">FAILED-DRIVER-LISTING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled if the listing of available drivers fails for some reason.
+See OUTPUT-ERROR</pre> </article> </li><li> <a name="CL-OUT123:FAILED-DRIVER-LISTING"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:FAILED-DRIVER-LISTING">FAILED-DRIVER-LISTING</a></code></h4>  </header> <pre class="docstring">Condition signalled if the listing of available drivers fails for some reason.
 
-See OUTPUT-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:FAILED-FORMAT-LISTING"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:FAILED-FORMAT-LISTING" class="name">FAILED-FORMAT-LISTING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled if the listing of available formats fails for some reason.
+See OUTPUT-ERROR</pre> </article> </li><li> <a name="CL-OUT123:FAILED-FORMAT-LISTING"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:FAILED-FORMAT-LISTING">FAILED-FORMAT-LISTING</a></code></h4>  </header> <pre class="docstring">Condition signalled if the listing of available formats fails for some reason.
 
-See OUTPUT-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:NOT-CONNECTED"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:NOT-CONNECTED" class="name">NOT-CONNECTED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled if an operation is attempted that requires the output to be connected, but it isn't.
+See OUTPUT-ERROR</pre> </article> </li><li> <a name="CL-OUT123:NOT-CONNECTED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:NOT-CONNECTED">NOT-CONNECTED</a></code></h4>  </header> <pre class="docstring">Condition signalled if an operation is attempted that requires the output to be connected, but it isn't.
 
-See OUTPUT-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:OUTPUT-ERROR"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:OUTPUT-ERROR" class="name">OUTPUT-ERROR</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Error condition superclass for all errors related to this library.
+See OUTPUT-ERROR</pre> </article> </li><li> <a name="CL-OUT123:OUTPUT-ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:OUTPUT-ERROR">OUTPUT-ERROR</a></code></h4>  </header> <pre class="docstring">Error condition superclass for all errors related to this library.
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:START-FAILED"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:START-FAILED" class="name">START-FAILED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Condition signalled if starting the device fails.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:START-FAILED"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123:START-FAILED">START-FAILED</a></code></h4>  </header> <pre class="docstring">Condition signalled if starting the device fails.
 
 See ERROR-STRING-ERROR
 See RATE
 See CHANNELS
-See ENCODING</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:BUFFERED"/>
-                  <article>
-                    <header class="accessor">
-                      <span class="type">accessor</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:BUFFERED" class="name">BUFFERED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the number of bytes that currently reside in the internal buffer.
+See ENCODING</pre> </article> </li><li> <a name="CL-OUT123:BUFFERED"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:BUFFERED">BUFFERED</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Returns the number of bytes that currently reside in the internal buffer.
 
 This number changes constantly as audio is played back.
 
@@ -320,20 +137,7 @@ This is setfable. Once set, a fork occurs to spawn a
 &quot;thread&quot; to process the buffer in in the background.
 See the &lt;out123.h&gt; file for more information.
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:CONNECT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:CONNECT" class="name">CONNECT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT &amp;KEY (DRIVER (DRIVER OUTPUT)) (DEVICE (DEVICE OUTPUT)))</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Connects the output to the requested driver and device.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:CONNECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:CONNECT">CONNECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT &amp;KEY (DRIVER (DRIVER OUTPUT)) (DEVICE (DEVICE OUTPUT))</code><code>)</code>  </header> <pre class="docstring">Connects the output to the requested driver and device.
 
 The output must not be connected already.
 
@@ -344,33 +148,7 @@ backend. This might differ from what you requested.
 See OUTPUT
 See DRIVER
 See DEVICE
-See CONNECTED</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DEVICE-DEFAULT-NAME"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DEVICE-DEFAULT-NAME" class="name">DEVICE-DEFAULT-NAME</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(&amp;OPTIONAL (IDENT (PACKAGE-NAME *PACKAGE*)))</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Attempts to return a somewhat sensible name to use for our application.</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DISCONNECT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DISCONNECT" class="name">DISCONNECT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Disconnects the output from its driver and device.
+See CONNECTED</pre> </article> </li><li> <a name="CL-OUT123:DEVICE-DEFAULT-NAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DEVICE-DEFAULT-NAME">DEVICE-DEFAULT-NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">&amp;OPTIONAL (IDENT (PACKAGE-NAME *PACKAGE*))</code><code>)</code>  </header> <pre class="docstring">Attempts to return a somewhat sensible name to use for our application.</pre> </article> </li><li> <a name="CL-OUT123:DISCONNECT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DISCONNECT">DISCONNECT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Disconnects the output from its driver and device.
 
 If the output is already disconnected, this does nothing.
 
@@ -380,128 +158,37 @@ call DROP first.
 
 See OUTPUT
 See DROP
-See CONNECTED</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DRAIN"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DRAIN" class="name">DRAIN</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Blocks until all output in the buffer has been played back.
+See CONNECTED</pre> </article> </li><li> <a name="CL-OUT123:DRAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DRAIN">DRAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Blocks until all output in the buffer has been played back.
 
 Implicitly resumes playback if it is paused first and then
 pauses it again once it finishes.
 
 See PLAYING
 See OUTPUT
-See NDRAIN</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DRIVER-INFO"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DRIVER-INFO" class="name">DRIVER-INFO</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the current driver and device the output uses, if any.
+See NDRAIN</pre> </article> </li><li> <a name="CL-OUT123:DRIVER-INFO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DRIVER-INFO">DRIVER-INFO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Returns the current driver and device the output uses, if any.
 
 This might differ from DRIVER and DEVICE if the handle was not yet
 CONNECTed, was connected by non-standard means, or something else
 went wrong.
 
 See OUTPUT
-See CONNECT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DRIVERS"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DRIVERS" class="name">DRIVERS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns a list of drivers with their name and description.
+See CONNECT</pre> </article> </li><li> <a name="CL-OUT123:DRIVERS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DRIVERS">DRIVERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Returns a list of drivers with their name and description.
 
 You can use this to determine the available drivers and pick a suitable backend based on that.
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DROP"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DROP" class="name">DROP</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Drops all remaining output from the internal buffers.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:DROP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DROP">DROP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Drops all remaining output from the internal buffers.
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:ENCODINGS"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:ENCODINGS" class="name">ENCODINGS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT RATE CHANNELS)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns a list of the possible encodings for the output rate and channel count you specified.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:ENCODINGS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:ENCODINGS">ENCODINGS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT RATE CHANNELS</code><code>)</code>  </header> <pre class="docstring">Returns a list of the possible encodings for the output rate and channel count you specified.
 
 The output must be connected and will be stopped if it is playing.
 
-See OTUPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:FORMATS"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:FORMATS" class="name">FORMATS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT RATES MIN-CHANNELS MAX-CHANNELS)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns a list of possible formats for the requested rates and channels.
+See OTUPUT</pre> </article> </li><li> <a name="CL-OUT123:FORMATS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:FORMATS">FORMATS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT RATES MIN-CHANNELS MAX-CHANNELS</code><code>)</code>  </header> <pre class="docstring">Returns a list of possible formats for the requested rates and channels.
 
 RATES should be a list of integers.
 
 The output must be connected and will be stopped if it is playing.
 
-Each item in the list is a plist with :RATE, :CHANNELS, and :ENCODINGS as keys.</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:NDRAIN"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:NDRAIN" class="name">NDRAIN</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT BYTES)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Blocks until either all or bytes number of bytes have been played back.
+Each item in the list is a plist with :RATE, :CHANNELS, and :ENCODINGS as keys.</pre> </article> </li><li> <a name="CL-OUT123:MAKE-OUTPUT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:MAKE-OUTPUT">MAKE-OUTPUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DRIVER &amp;REST ARGS &amp;KEY &amp;ALLOW-OTHER-KEYS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123:NDRAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:NDRAIN">NDRAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT BYTES</code><code>)</code>  </header> <pre class="docstring">Blocks until either all or bytes number of bytes have been played back.
 
 Implictly resumes playback if it is paused first and then
 pauses it again if there are no remaining bytes to be played
@@ -509,36 +196,10 @@ back.
 
 See PLAYING
 See OUTPUT
-See DRAIN</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:PAUSE"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:PAUSE" class="name">PAUSE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Pauses playback.
+See DRAIN</pre> </article> </li><li> <a name="CL-OUT123:PAUSE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:PAUSE">PAUSE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Pauses playback.
 
 See OUTPUT
-See PLAYING</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:PLAY"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:PLAY" class="name">PLAY</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT BYTES)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Send the octet-vector to out123 to be played back on the output.
+See PLAYING</pre> </article> </li><li> <a name="CL-OUT123:PLAY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:PLAY">PLAY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT BYTES &amp;OPTIONAL (COUNT (LENGTH BYTES))</code><code>)</code>  </header> <pre class="docstring">Send the octet-vector or array-pointer to out123 to be played back on the output.
 
 If you need low latency, then this is definitely not the
 function for you. The buffer is converted into a foreign
@@ -547,20 +208,7 @@ byte array before being sent off.
 Returns the number of bytes that were actually played back.
 
 See PLAY-DIRECTLY
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:PLAY-DIRECTLY"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:PLAY-DIRECTLY" class="name">PLAY-DIRECTLY</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT BUFFER BYTES)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Directly sends the given buffer to out123 to be played back on the output.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:PLAY-DIRECTLY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:PLAY-DIRECTLY">PLAY-DIRECTLY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT BUFFER BYTES</code><code>)</code>  </header> <pre class="docstring">Directly sends the given buffer to out123 to be played back on the output.
 
 BUFFER must be a pointer to a foreign byte array of at least
 BYTES size. Returns the number of bytes that were actually
@@ -571,57 +219,18 @@ see CL-OUT123-CFFI:ERRCODE.
 
 See CL-OUT123-CFFI:ERRCODE
 See HANDLE
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:PLAYBACK-FORMAT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:PLAYBACK-FORMAT" class="name">PLAYBACK-FORMAT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the current rate, channels, encoding, and framesize used by the output, if any.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:PLAYBACK-FORMAT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:PLAYBACK-FORMAT">PLAYBACK-FORMAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Returns the current rate, channels, encoding, and framesize used by the output, if any.
 
 This might differ from RATE, CHANNELS, ENCODING, and FRAMESIZE
 if the handle has not yet been STARTed, was started by
 non-standard means, or something else went wrong.
 
 See OUTPUT
-See START</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:RESUME"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:RESUME" class="name">RESUME</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Resumes playback.
+See START</pre> </article> </li><li> <a name="CL-OUT123:RESUME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:RESUME">RESUME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Resumes playback.
 
 See OUTPUT
-See PLAYING</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:START"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:START" class="name">START</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT &amp;KEY (RATE (RATE OUTPUT)) (CHANNELS (CHANNELS OUTPUT))
- (ENCODING (ENCODING OUTPUT)))</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Starts playback to the connected output.
+See PLAYING</pre> </article> </li><li> <a name="CL-OUT123:START"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT &amp;KEY (RATE (RATE OUTPUT)) (CHANNELS (CHANNELS OUTPUT))
+ (ENCODING (ENCODING OUTPUT))</code><code>)</code>  </header> <pre class="docstring">Starts playback to the connected output.
 
 The output must be connected and must not have been started before.
 
@@ -634,102 +243,24 @@ See RATE
 See CHANNELS
 See ENCODING
 See FRAMESIZE
-See PLAYING</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:STOP"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:STOP" class="name">STOP</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OUTPUT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Stops playback.
+See PLAYING</pre> </article> </li><li> <a name="CL-OUT123:STOP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:STOP">STOP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OUTPUT</code><code>)</code>  </header> <pre class="docstring">Stops playback.
 
 If there is still audio data to be played on the buffer, then this
 will block until it is finished. If you wish to abort immediately,
 call DROP first.
 
 See OUTPUT
-See PLAYING</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:BYTES"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:BYTES" class="name">BYTES</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:CHANNELS"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:CHANNELS" class="name">CHANNELS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the number of audio channels the backend uses to process the buffer data.
+See PLAYING</pre> </article> </li><li> <a name="CL-OUT123:BYTES"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:BYTES">BYTES</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123:CHANNELS"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:CHANNELS">CHANNELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Returns the number of audio channels the backend uses to process the buffer data.
 
 Can be set as an initarg on the output.
 
 See OUTPUT
-See START</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:CONNECTED"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:CONNECTED" class="name">CONNECTED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns T if the output is connected to a device.</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DEVICE"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DEVICE" class="name">DEVICE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the string naming the device used to play back sound or NIL if unknown.
+See START</pre> </article> </li><li> <a name="CL-OUT123:CONNECTED"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:CONNECTED">CONNECTED</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns T if the output is connected to a device.</pre> </article> </li><li> <a name="CL-OUT123:DEVICE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DEVICE">DEVICE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Returns the string naming the device used to play back sound or NIL if unknown.
 
 Can be set as an initarg on the output.
 
 See OUTPUT
-See CONNECT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DEVICE-BUFFER"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DEVICE-BUFFER" class="name">DEVICE-BUFFER</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the number of seconds that the device buffer should hold.
+See CONNECT</pre> </article> </li><li> <a name="CL-OUT123:DEVICE-BUFFER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DEVICE-BUFFER">DEVICE-BUFFER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns the number of seconds that the device buffer should hold.
 
 Can be set as an initarg on the output.
 
@@ -738,20 +269,7 @@ T    for the default that the backend will choose for itself.
 REAL for the approximate amount of seconds of buffering. Should
      not be more than 0.5.
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:DRIVER"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:DRIVER" class="name">DRIVER</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the string naming the driver used to play back sound or NIL if unknown.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:DRIVER"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:DRIVER">DRIVER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Returns the string naming the driver used to play back sound or NIL if unknown.
 
 Can be set as an initarg on the output.
 
@@ -759,20 +277,7 @@ In order to get a listing of all possible drivers, see DRIVERS.
 
 See OUTPUT
 See DRIVERS
-See CONNECT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:ENCODING"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:ENCODING" class="name">ENCODING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the encoding the backend uses to decode the buffer data.
+See CONNECT</pre> </article> </li><li> <a name="CL-OUT123:ENCODING"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:ENCODING">ENCODING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Returns the encoding the backend uses to decode the buffer data.
 
 Can be set as an initarg on the output.
 
@@ -780,136 +285,32 @@ See ENCODINGS for a list of possible encodings.
 
 See OUTPUT
 See START
-See ENCODINGS</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:ERROR-STRING"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:ERROR-STRING" class="name">ERROR-STRING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the error string from the out123 library for the error we encountered.
+See ENCODINGS</pre> </article> </li><li> <a name="CL-OUT123:ERROR-STRING"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:ERROR-STRING">ERROR-STRING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Returns the error string from the out123 library for the error we encountered.
 
-See ERROR-STRING-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:GAIN"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:GAIN" class="name">GAIN</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns an integer representing the output device gain. This is driver-specific.
+See ERROR-STRING-ERROR</pre> </article> </li><li> <a name="CL-OUT123:GAIN"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:GAIN">GAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns an integer representing the output device gain. This is driver-specific.
 
 Can be set as an initarg on the output.
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:HANDLE"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:HANDLE" class="name">HANDLE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the pointer to the actual handle object that the output object encapsulates.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:HANDLE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:HANDLE">HANDLE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns the pointer to the actual handle object that the output object encapsulates.
 
 You should not need this unless you are working with the internals of the library.
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:NAME"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:NAME" class="name">NAME</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the name used to identify the output in the audio playback device, if permitted.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:NAME"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:NAME">NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns the name used to identify the output in the audio playback device, if permitted.
 
 Can be set as an initarg on the otuput.
 
 The default value is calculated by DEVICE-DEFAULT-NAME
 
 See OUTPUT
-See DEVICE-DEFAULT-NAME</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:OUTPUT"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:OUTPUT" class="name">OUTPUT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the output object associated with the condition.
+See DEVICE-DEFAULT-NAME</pre> </article> </li><li> <a name="CL-OUT123:OUTPUT"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:OUTPUT">OUTPUT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Returns the output object associated with the condition.
 
-See OUTPUT-ERROR</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:OUTPUT-TO"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:OUTPUT-TO" class="name">OUTPUT-TO</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns a list of special flags that tell the backend (if possible) where to output to.
+See OUTPUT-ERROR</pre> </article> </li><li> <a name="CL-OUT123:OUTPUT-TO"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:OUTPUT-TO">OUTPUT-TO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns a list of special flags that tell the backend (if possible) where to output to.
 
 Can be set as an initarg on the output.
 
 The flags in the list can be one of :HEADPHONES :INTERNAL-SPEAKER :LINE-OUT
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:PLAYING"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:PLAYING" class="name">PLAYING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns T if the output is currently playing audio.</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:PRELOAD"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:PRELOAD" class="name">PRELOAD</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(OBJECT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the percentage of data that is preloaded into the device buffer.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:PLAYING"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:PLAYING">PLAYING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns T if the output is currently playing audio.</pre> </article> </li><li> <a name="CL-OUT123:PRELOAD"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:PRELOAD">PRELOAD</a></code></h4> <code class="qualifiers"></code> <code class="arguments">OBJECT</code><code>)</code>  </header> <pre class="docstring">Returns the percentage of data that is preloaded into the device buffer.
 
 Can be set as an initarg on the output.
 
@@ -918,609 +319,10 @@ T    for the default that the backend will choose for itself.
 NIL  for no preloading, aka 0.0.
 REAL for the approximate fraction that should be preloaded [0,1].
 
-See OUTPUT</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123:RATE"/>
-                  <article>
-                    <header class="generic">
-                      <span class="type">generic</span>
-                      <code>
-                        <h4><a href="#CL-OUT123:RATE" class="name">RATE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(CONDITION)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Returns the sampling rate the backend uses to process the buffer data.
+See OUTPUT</pre> </article> </li><li> <a name="CL-OUT123:RATE"> </a> <article> <header class="generic"> <span class="type">generic</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123:RATE">RATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">CONDITION</code><code>)</code>  </header> <pre class="docstring">Returns the sampling rate the backend uses to process the buffer data.
 
 Can be set as an initarg on the output.
 
 See OUTPUT
-See START</pre>
-                  </article>
-                </li></ul>
-            </li><li class="package">
-              <h3>
-                <a name="CL-OUT123-CFFI" href="#CL-OUT123-CFFI">CL-OUT123-CFFI</a>
-                <span class="nicknames">(ORG.SHIRAKUMO.FRAF.OUT123.CFFI)</span>
-              </h3>
-              <ul><li>
-                  <a name="CL-OUT123-CFFI:*STATIC*"/>
-                  <article>
-                    <header class="special">
-                      <span class="type">special</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:*STATIC*" class="name">*STATIC*</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Variable containing a pathname to the static directory.</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:FMT"/>
-                  <article>
-                    <header class="class">
-                      <span class="type">class</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:FMT" class="name">FMT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:HANDLE"/>
-                  <article>
-                    <header class="class">
-                      <span class="type">class</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:HANDLE" class="name">HANDLE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ERROR"/>
-                  <article>
-                    <header class="condition">
-                      <span class="type">condition</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ERROR" class="name">ERROR</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:FMT-CHANNELS"/>
-                  <article>
-                    <header class="accessor">
-                      <span class="type">accessor</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:FMT-CHANNELS" class="name">FMT-CHANNELS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(POINTER-TO-FMT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:FMT-ENCODING"/>
-                  <article>
-                    <header class="accessor">
-                      <span class="type">accessor</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:FMT-ENCODING" class="name">FMT-ENCODING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(POINTER-TO-FMT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:FMT-RATE"/>
-                  <article>
-                    <header class="accessor">
-                      <span class="type">accessor</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:FMT-RATE" class="name">FMT-RATE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(POINTER-TO-FMT)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:BUFFERED"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:BUFFERED" class="name">BUFFERED</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:CLOSE"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:CLOSE" class="name">CLOSE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:CONTINUE"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:CONTINUE" class="name">CONTINUE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:DEL"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:DEL" class="name">DEL</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:DRAIN"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:DRAIN" class="name">DRAIN</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:DRIVER-INFO"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:DRIVER-INFO" class="name">DRIVER-INFO</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE DRIVER DEVICE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:DRIVERS"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:DRIVERS" class="name">DRIVERS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE NAMES DESCR)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:DROP"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:DROP" class="name">DROP</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ENC-BYNAME"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ENC-BYNAME" class="name">ENC-BYNAME</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(NAME)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ENC-LIST"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ENC-LIST" class="name">ENC-LIST</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(ENCLIST)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ENC-LONGNAME"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ENC-LONGNAME" class="name">ENC-LONGNAME</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(ENCODING)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ENC-NAME"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ENC-NAME" class="name">ENC-NAME</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(ENCODING)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ENCODINGS"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ENCODINGS" class="name">ENCODINGS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE RATE CHANNELS)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ENCSIZE"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ENCSIZE" class="name">ENCSIZE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(ENCODING)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ERRCODE"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ERRCODE" class="name">ERRCODE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:ERROR"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:ERROR" class="name">ERROR</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(DATUM &amp;REST ARGUMENTS)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring">Invoke the signal facility on a condition formed from DATUM and ARGUMENTS.
-  If the condition is not handled, the debugger is invoked.</pre>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:FORMATS"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:FORMATS" class="name">FORMATS</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE RATES RATECOUNT MINCHANNELS MAXCHANNELS FMTLIST)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:GETFORMAT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:GETFORMAT" class="name">GETFORMAT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE RATE CHANNELS ENCODING FRAMESIZE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:GETPARAM"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:GETPARAM" class="name">GETPARAM</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE RET-VALUE RET-FVALUE RET-SVALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:GETPARAM-FLOAT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:GETPARAM-FLOAT" class="name">GETPARAM-FLOAT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE VALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:GETPARAM-INT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:GETPARAM-INT" class="name">GETPARAM-INT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE VALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:GETPARAM-STRING"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:GETPARAM-STRING" class="name">GETPARAM-STRING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE VALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:NDRAIN"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:NDRAIN" class="name">NDRAIN</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE BYTES)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:NEW"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:NEW" class="name">NEW</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">()</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:OPEN"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:OPEN" class="name">OPEN</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE DRIVER DEVICE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PARAM"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PARAM" class="name">PARAM</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE VALUE FVALUE SVALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PARAM-FLOAT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PARAM-FLOAT" class="name">PARAM-FLOAT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE VALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PARAM-FROM"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PARAM-FROM" class="name">PARAM-FROM</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE HANDLE-FROM)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PARAM-INT"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PARAM-INT" class="name">PARAM-INT</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE VALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PARAM-STRING"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PARAM-STRING" class="name">PARAM-STRING</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE CODE VALUE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PAUSE"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PAUSE" class="name">PAUSE</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PLAIN-STRERROR"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PLAIN-STRERROR" class="name">PLAIN-STRERROR</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(ERRCODE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:PLAY"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:PLAY" class="name">PLAY</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE BUFFER BYTES)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:SET-BUFFER"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:SET-BUFFER" class="name">SET-BUFFER</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE BUFFER-BYTES)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:START"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:START" class="name">START</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE RATE CHANNELS ENCODING)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:STOP"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:STOP" class="name">STOP</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li><li>
-                  <a name="CL-OUT123-CFFI:STRERROR"/>
-                  <article>
-                    <header class="function">
-                      <span class="type">function</span>
-                      <code>
-                        <h4><a href="#CL-OUT123-CFFI:STRERROR" class="name">STRERROR</a></h4>
-                        <span class="qualifiers"></span>
-                        <span class="arguments">(HANDLE)</span>
-                      </code>
-                    </header>
-                    <pre class="docstring"/>
-                  </article>
-                </li></ul>
-            </li></ul>
-        </article>
-      
-    </div>
-  </body>
-</html>
+See START</pre> </article> </li></ul> </li><li class="package"> <h3> <a name="CL-OUT123-CFFI" href="#CL-OUT123-CFFI">CL-OUT123-CFFI</a> <span class="nicknames">(ORG.SHIRAKUMO.FRAF.OUT123.CFFI)</span> </h3> <ul><li> <a name="CL-OUT123-CFFI:*STATIC*"> </a> <article> <header class="special"> <span class="type">special</span>  <h4 class="name"><code><a href="#CL-OUT123-CFFI:*STATIC*">*STATIC*</a></code></h4>  </header> <pre class="docstring">Variable containing a pathname to the static directory.</pre> </article> </li><li> <a name="CL-OUT123-CFFI:FMT"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#CL-OUT123-CFFI:FMT">FMT</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:HANDLE"> </a> <article> <header class="class"> <span class="type">class</span>  <h4 class="name"><code><a href="#CL-OUT123-CFFI:HANDLE">HANDLE</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ERROR"> </a> <article> <header class="condition"> <span class="type">condition</span>  <h4 class="name"><code><a href="#CL-OUT123-CFFI:ERROR">ERROR</a></code></h4>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:FMT-CHANNELS"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:FMT-CHANNELS">FMT-CHANNELS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">POINTER-TO-FMT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:FMT-ENCODING"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:FMT-ENCODING">FMT-ENCODING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">POINTER-TO-FMT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:FMT-RATE"> </a> <article> <header class="accessor"> <span class="type">accessor</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:FMT-RATE">FMT-RATE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">POINTER-TO-FMT</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:BUFFERED"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:BUFFERED">BUFFERED</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:CLOSE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:CLOSE">CLOSE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:CONTINUE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:CONTINUE">CONTINUE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:DEL"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:DEL">DEL</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:DRAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:DRAIN">DRAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:DRIVER-INFO"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:DRIVER-INFO">DRIVER-INFO</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE DRIVER DEVICE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:DRIVERS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:DRIVERS">DRIVERS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE NAMES DESCR</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:DROP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:DROP">DROP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ENC-BYNAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ENC-BYNAME">ENC-BYNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">NAME</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ENC-LIST"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ENC-LIST">ENC-LIST</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ENCLIST</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ENC-LONGNAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ENC-LONGNAME">ENC-LONGNAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ENCODING</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ENC-NAME"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ENC-NAME">ENC-NAME</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ENCODING</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ENCODINGS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ENCODINGS">ENCODINGS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE RATE CHANNELS</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ENCSIZE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ENCSIZE">ENCSIZE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ENCODING</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ERRCODE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ERRCODE">ERRCODE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:ERROR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:ERROR">ERROR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">DATUM &amp;REST ARGUMENTS</code><code>)</code>  </header> <pre class="docstring">Invoke the signal facility on a condition formed from DATUM and ARGUMENTS.
+  If the condition is not handled, the debugger is invoked.</pre> </article> </li><li> <a name="CL-OUT123-CFFI:FORMATS"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:FORMATS">FORMATS</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE RATES RATECOUNT MINCHANNELS MAXCHANNELS FMTLIST</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:GETFORMAT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:GETFORMAT">GETFORMAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE RATE CHANNELS ENCODING FRAMESIZE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:GETPARAM"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:GETPARAM">GETPARAM</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE RET-VALUE RET-FVALUE RET-SVALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:GETPARAM-FLOAT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:GETPARAM-FLOAT">GETPARAM-FLOAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE VALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:GETPARAM-INT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:GETPARAM-INT">GETPARAM-INT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE VALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:GETPARAM-STRING"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:GETPARAM-STRING">GETPARAM-STRING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE VALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:NDRAIN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:NDRAIN">NDRAIN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE BYTES</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:NEW"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:NEW">NEW</a></code></h4> <code class="qualifiers"></code> <code class="arguments"></code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:OPEN"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:OPEN">OPEN</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE DRIVER DEVICE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PARAM"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PARAM">PARAM</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE VALUE FVALUE SVALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PARAM-FLOAT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PARAM-FLOAT">PARAM-FLOAT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE VALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PARAM-FROM"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PARAM-FROM">PARAM-FROM</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE HANDLE-FROM</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PARAM-INT"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PARAM-INT">PARAM-INT</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE VALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PARAM-STRING"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PARAM-STRING">PARAM-STRING</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE CODE VALUE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PAUSE"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PAUSE">PAUSE</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PLAIN-STRERROR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PLAIN-STRERROR">PLAIN-STRERROR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">ERRCODE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:PLAY"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:PLAY">PLAY</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE BUFFER BYTES</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:SET-BUFFER"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:SET-BUFFER">SET-BUFFER</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE BUFFER-BYTES</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:START"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:START">START</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE RATE CHANNELS ENCODING</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:STOP"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:STOP">STOP</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li><li> <a name="CL-OUT123-CFFI:STRERROR"> </a> <article> <header class="function"> <span class="type">function</span>  <code>(</code><h4 class="name"><code><a href="#CL-OUT123-CFFI:STRERROR">STRERROR</a></code></h4> <code class="qualifiers"></code> <code class="arguments">HANDLE</code><code>)</code>  </header> <pre class="docstring"/> </article> </li></ul> </li></ul> </article>  </main> </body> </html> 
