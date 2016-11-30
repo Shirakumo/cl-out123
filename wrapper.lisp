@@ -6,11 +6,16 @@
 
 (in-package #:org.shirakumo.fraf.out123)
 
-(defun dispose-handle (handle)
+(defun dispose-handle (handle thread &key (delete T))
   (unless (null-pointer-p handle)
-    (cl-out123-cffi:drop handle)
-    (cl-out123-cffi:close handle)
-    (cl-out123-cffi:del handle)))
+    (flet ((close-properly ()
+             (cl-out123-cffi:drop handle)
+             (cl-out123-cffi:close handle)
+             (when delete
+               (cl-out123-cffi:del handle))))
+      (if (eql (bt:current-thread) thread)
+          (close-properly)
+          (bt:interrupt-thread thread #'close-properly)))))
 
 (defun make-output (driver &rest args &key &allow-other-keys)
   (apply #'make-instance 'output :driver driver args))
@@ -29,7 +34,8 @@
    (preload :initarg :preload :reader preload)
    (gain :initarg :gain :reader gain)
    (device-buffer :initarg :device-buffer :reader device-buffer)
-   (name :initarg :name :reader name))
+   (name :initarg :name :reader name)
+   (cthread :initform (cons (bt:current-thread) NIL) :reader cthread))
   (:default-initargs
    :driver NIL
    :device NIL
@@ -52,7 +58,8 @@
     (let ((handle (cl-out123-cffi:new)))
       (when (or (not handle) (null-pointer-p handle))
         (error 'creation-failure :output output))
-      (tg:finalize output (lambda () (dispose-handle handle)))
+      (let ((cthread (cthread output)))
+        (tg:finalize output (lambda () (dispose-handle handle (car cthread)))))
       (setf (slot-value output 'handle) handle)
       (when output-to
         (let ((code 0))
@@ -75,7 +82,7 @@
   ;; Make sure that our finalizer cannot accidentally try to
   ;; dispose of an already disposed handle later...
   (tg:cancel-finalization output)
-  (dispose-handle (handle output))
+  (dispose-handle (handle output) (car (cthread output)))
   (call-next-method)
   (when (connected output)
     (set-connected NIL output)
@@ -154,6 +161,7 @@
     (cl-out123-cffi:open (handle output)
                          (or driver (null-pointer))
                          (or device (null-pointer))))
+  (setf (car (cthread output)) (bt:current-thread))
   (set-connected T output)
   (multiple-value-bind (driver device) (driver-info output)
     (setf (slot-value output 'driver) driver)
@@ -161,8 +169,8 @@
   output)
 
 (defun disconnect (output)
-  (when (connected output) 
-    (cl-out123-cffi:close (handle output))
+  (when (connected output)
+    (dispose-handle (handle output) (car (cthread output)) :delete NIL)
     (set-connected NIL output)
     (set-playing NIL output))
   output)

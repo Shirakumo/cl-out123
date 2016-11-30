@@ -22,4 +22,5 @@
   :depends-on (:cffi
                :trivial-features
                :trivial-garbage
-               :documentation-utils))
+               :documentation-utils
+               :bordeaux-threads))
