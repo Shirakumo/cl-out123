@@ -206,7 +206,14 @@
 
 (declaim (inline play-directly))
 (defun play-directly (output buffer bytes)
-  (cl-out123-cffi:play (handle output) buffer bytes))
+  (#+sbcl sb-sys:without-interrupts
+   #+ccl ccl:without-interrupts
+   #+ecl ext:without-interrupts
+   #+cmucl sys:without-interrupts
+   #+lispworks lw:without-interrupts
+   #+allegro excl:without-interrupts
+   #-(or sbcl ccl ecl cmucl lispworks allegro) progn
+    (cl-out123-cffi:play (handle output) buffer bytes)))
 
 (defun play (output bytes &optional (count (length bytes)))
   (prog1
