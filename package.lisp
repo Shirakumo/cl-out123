@@ -119,6 +119,7 @@
    #:pause
    #:resume
    #:stop
+   #:with-playback
    #:play-directly
    #:play
    #:drop

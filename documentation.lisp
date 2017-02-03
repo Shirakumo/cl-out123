@@ -141,7 +141,15 @@ See OUTPUT-TO
 See PRELOAD
 See GAIN
 See DEVICE-BUFFER
-See NAME")
+See NAME
+See OUTPUT-LOCK")
+
+  (function output-lock
+    "Reader for the lock used to mutually exclude access to playback.
+
+You should not need this unless you are working with the internals of the library.
+
+See OUTPUT")
 
   (function handle
     "Returns the pointer to the actual handle object that the output object encapsulates.
@@ -323,6 +331,9 @@ If the connection was successful, the output's DRIVER and DEVICE
 are updated to reflect the ones that were actually chosen by the
 backend. This might differ from what you requested.
 
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
+
 See OUTPUT
 See DRIVER
 See DEVICE
@@ -335,6 +346,9 @@ If the output is already disconnected, this does nothing.
 
 If there is still audio data to be played on the buffer, then this
 will block until it is finished. If you wish to abort immediately,
+
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
 call DROP first.
 
 See OUTPUT
@@ -350,6 +364,9 @@ If the start was successful, the output's RATE, CHANNELS, ENCODING,
 and FRAMESIZE are updated to reflect the values that were actually
 chosen by the backend. This might differ from what you requested.
 
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
+
 See OUTPUT
 See RATE
 See CHANNELS
@@ -360,11 +377,17 @@ See PLAYING")
   (function pause
     "Pauses playback.
 
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
+
 See OUTPUT
 See PLAYING")
 
   (function resume
     "Resumes playback.
+
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
 
 See OUTPUT
 See PLAYING")
@@ -376,8 +399,20 @@ If there is still audio data to be played on the buffer, then this
 will block until it is finished. If you wish to abort immediately,
 call DROP first.
 
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
+
 See OUTPUT
 See PLAYING")
+
+  (function with-playback
+    "Ensures a clean playback environment for the body.
+
+First calls START with the given options, then evaluates the body
+forms in an unwind-protect that calls STOP on exit.
+
+See START
+See STOP")
 
   (function play-directly
     "Directly sends the given buffer to out123 to be played back on the output.
@@ -388,6 +423,10 @@ played back.
 
 This does not catch errors. If you need to check for errors,
 see CL-OUT123-CFFI:ERRCODE.
+
+This does not care for synchronisation or mutual exclusion.
+If you call this simultaneously from multiple threads, things
+/will/ crash and burn horribly.
 
 See CL-OUT123-CFFI:ERRCODE
 See HANDLE
@@ -402,11 +441,17 @@ byte array before being sent off.
 
 Returns the number of bytes that were actually played back.
 
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
+
 See PLAY-DIRECTLY
 See OUTPUT")
 
   (function drop
     "Drops all remaining output from the internal buffers.
+
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
 
 See OUTPUT")
 
@@ -415,6 +460,9 @@ See OUTPUT")
 
 Implicitly resumes playback if it is paused first and then
 pauses it again once it finishes.
+
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
 
 See PLAYING
 See OUTPUT
@@ -426,6 +474,9 @@ See NDRAIN")
 Implictly resumes playback if it is paused first and then
 pauses it again if there are no remaining bytes to be played
 back.
+
+This function is safe to be called from multiple threads,
+as it will mutually exclude them through a lock.
 
 See PLAYING
 See OUTPUT
