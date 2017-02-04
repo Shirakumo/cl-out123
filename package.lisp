@@ -73,6 +73,7 @@
    #:creation-failure
    #:not-connected
    #:failed-driver-listing
+   #:failed-driver-info
    #:failed-format-listing
    #:already-connected
    #:error-string-error

@@ -21,6 +21,10 @@
   ()
   (:report (lambda (c s) (format s "Failed to list available drivers for ~a." (output c)))))
 
+(define-condition failed-driver-info (output-error)
+  ()
+  (:report (lambda (c s) (format s "Failed to fetch information about the driver for ~a." (output c)))))
+
 (define-condition failed-format-listing (output-error)
   ()
   (:report (lambda (c s) (format s "Failed to list available fromats for ~a." (output c)))))
