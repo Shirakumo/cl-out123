@@ -237,7 +237,7 @@
           (foreign-pointer
            (play-directly output bytes count))
           ((vector (unsigned-byte 8))
-           (with-foreign-array (arr bytes :char)
+           (with-foreign-array (arr bytes `(:array :unsigned-char ,count))
              (play-directly output arr count))))
       (with-error (err 'playback-failed :output output :error err :bytes bytes)
         (cl-out123-cffi:errcode (handle output))))))
