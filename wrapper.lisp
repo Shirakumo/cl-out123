@@ -241,10 +241,10 @@
              (play-directly output arr count)))
           ((vector single-float)
            (with-foreign-array (arr bytes `(:array :float ,count))
-             (play-directly output arr count)))
+             (play-directly output arr (* count (cffi:foreign-type-size :float)))))
           ((vector double-float)
            (with-foreign-array (arr bytes `(:array :double ,count))
-             (play-directly output arr count))))
+             (play-directly output arr (* count (cffi:foreign-type-size :double))))))
       (with-error (err 'playback-failed :output output :error err :bytes bytes)
         (cl-out123-cffi:errcode (handle output))))))
 
