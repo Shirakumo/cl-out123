@@ -29,6 +29,10 @@
   ()
   (:report (lambda (c s) (format s "Failed to list available fromats for ~a." (output c)))))
 
+(define-condition failed-playback-format (output-error)
+  ()
+  (:report (lambda (c s) (format s "Failed to query playback fromat for ~a." (output c)))))
+
 (define-condition already-connected (output-error)
   ()
   (:report (lambda (c s) (format s "The output ~a is already connected." (output c)))))

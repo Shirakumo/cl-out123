@@ -75,6 +75,7 @@
    #:failed-driver-listing
    #:failed-driver-info
    #:failed-format-listing
+   #:failed-playback-format
    #:already-connected
    #:error-string-error
    #:error-string
