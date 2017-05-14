@@ -86,7 +86,7 @@
    #:rate
    #:channels
    #:encoding
-   #:playbkac-failed
+   #:playback-failed
    #:bytes
    #:buffer-set-failed
    #:bytes)
