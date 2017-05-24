@@ -195,14 +195,16 @@
 
 (defun pause (output)
   (bt:with-lock-held ((playback-lock output))
-    (cl-out123-cffi:pause (handle output))
-    (set-playing NIL output))
+    (when (playing output)
+      (cl-out123-cffi:pause (handle output))
+      (set-playing NIL output)))
   output)
 
 (defun resume (output)
   (bt:with-lock-held ((playback-lock output))
-    (cl-out123-cffi:continue (handle output))
-    (set-playing T output))
+    (unless (playing output)
+      (cl-out123-cffi:continue (handle output))
+      (set-playing T output)))
   output)
 
 (defun stop (output)
