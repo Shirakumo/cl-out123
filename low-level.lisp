@@ -10,6 +10,15 @@
 (defvar *static* (make-pathname :name NIL :type NIL :defaults (merge-pathnames "static/" *here*)))
 (pushnew *static* cffi:*foreign-library-directories*)
 
+#+windows
+(let ((path (format NIL "~a;~a"
+                    (uiop:native-namestring
+                     (merge-pathnames #+x86 "win32" #+x86-64 "win64" *static*))
+                    (uiop:getenv "PATH"))))
+  #+sbcl (sb-posix:setenv "PATH" path 1)
+  #+ccl (ccl:setenv "PATH" path T)
+  #+ecl (ext:setenv "PATH" path))
+
 (define-foreign-library libout123
   (:darwin (:or "libout123.dylib" "libout123.so"
                 #+X86 "mac32-libout123.dylib"
