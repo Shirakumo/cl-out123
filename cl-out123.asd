@@ -10,7 +10,9 @@
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Bindings to libout123, providing cross-platform audio output."
-  :homepage "https://github.com/Shirakumo/cl-out123"
+  :homepage "https://Shirakumo.github.io/cl-out123/"
+  :bug-tracker "https://github.com/Shirakumo/cl-out123/issues"
+  :source-control (:git "https://github.com/Shirakumo/cl-out123.git")
   :serial T
   :components ((:file "package")
                (:file "toolkit")
