@@ -6,7 +6,7 @@
 
 (asdf:defsystem cl-out123
   :version "1.0.0"
-  :license "Artistic"
+  :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
   :description "Bindings to libout123, providing cross-platform audio output."
