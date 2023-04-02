@@ -225,7 +225,7 @@
 (defun play-directly (output buffer bytes)
   (#+sbcl sb-sys:without-interrupts
    #+ccl ccl:without-interrupts
-   #+ecl ext:without-interrupts
+   #+ecl mp:without-interrupts
    #+cmucl sys:without-interrupts
    #+lispworks lw:without-interrupts
    #+allegro excl:without-interrupts
