@@ -4,9 +4,9 @@
   :author "Yukari Hafner <shinmera@tymoon.eu>"
   :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "Bindings to libout123, providing cross-platform audio output."
-  :homepage "https://Shirakumo.github.io/cl-out123/"
-  :bug-tracker "https://github.com/Shirakumo/cl-out123/issues"
-  :source-control (:git "https://github.com/Shirakumo/cl-out123.git")
+  :homepage "https://shirakumo.org/docs/cl-out123/"
+  :bug-tracker "https://shirakumo.org/project/cl-out123/issues"
+  :source-control (:git "https://shirakumo.org/project/cl-out123.git")
   :serial T
   :components ((:file "package")
                (:file "toolkit")
